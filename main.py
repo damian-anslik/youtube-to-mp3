@@ -5,7 +5,7 @@ import youtube_dl
 
 def download_audio(url: str, download_dir: str = None):
     """  
-    Attempts to extract and download from the provided Youtube video URL
+    Attempts to extract and download the audio from the provided Youtube video URL
 
     args:
         - url : the URL of the video being downloaded
@@ -15,7 +15,7 @@ def download_audio(url: str, download_dir: str = None):
         - filename : the name of the downloaded file
     """
     video_info = youtube_dl.YoutubeDL().extract_info(url=url, download=False)
-    filename = "{download_dir}/{title}.mp3".format_map(
+    filename = "{download_dir}/{title}.m4a".format_map(
         {
             "download_dir": download_dir if download_dir else "downloads",
             "title": video_info["title"],
