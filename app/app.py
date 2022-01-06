@@ -12,41 +12,37 @@ def get_download_path(download_dir: str) -> os.path:
     return download_path
 
 
-def download_audio_single(url: str, filename: str = None, download_dir: str = None):
-    """  
-    Download the audio from a specified URL and save it locally
+def download_audio_single(url: str, download_dir: str = None) -> str:
+    """
+    Download the audio from a specified URL and save it locally, return the path of the download
     """
     file_data = youtube_dl.YoutubeDL().extract_info(url, download=False)
-    if filename is None:
-        title = file_data["title"]
-        filename = f"{title}.mp3"
-    else:
-        filename = f"{filename}.mp3"
-    if download_dir is None:
+    if download_dir is None or len(download_dir)==0:
         download_dir = "downloads"
+    title = file_data["title"]
+    filename = f"{title}.mp3"
     download_path = get_download_path(download_dir)
+    full_download_path = os.path.join(download_path, filename)
     download_options = {
         "format": "bestaudio/best",
         "keepvideo": False,
-        "outtmpl": os.path.join(download_path, filename)
+        "outtmpl": full_download_path
     }
     with youtube_dl.YoutubeDL(download_options) as downloader:
         downloader.download(url_list=[url])
-    return filename
+    return str(full_download_path)
 
 
-def download_audio_multiple(url_list: list[str], filename_list: list[str] = None, download_dir: str = None) -> list[str]:
+def download_audio_multiple(url_list: list[str], download_dir: str = None) -> list[str]:
     """  
     Iterates over a list of audio URLs and downloads each title
     """
-    downloaded_files = []
-    if filename_list is None:
-        filename_list = [None]*len(url_list)
-    for url, filename in zip(url_list, filename_list):
+    downloaded_filepaths = []
+    for url in enumerate(url_list):
         try:
-            downloaded_filename = download_audio_single(url, filename, download_dir)
-            downloaded_files.append(downloaded_filename)
+            downloaded_filename = download_audio_single(url, download_dir)
+            downloaded_filepaths.append(downloaded_filename)
         except youtube_dl.DownloadError as download_exception:
-            print(f"Encountered an exception while attempting to download URL: {url} - {download_exception}")
+            print(f"SKIPPING: Encountered an exception while attempting to download URL: {url} - {download_exception}")
             continue
-    return downloaded_files
+    return downloaded_filepaths
