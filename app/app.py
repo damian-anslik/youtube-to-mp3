@@ -16,10 +16,10 @@ def download_audio_single(url: str, download_dir: str = None) -> str:
     """
     Download the audio from a specified URL and save it locally, return the path of the download
     """
-    file_data = youtube_dl.YoutubeDL().extract_info(url, download=False)
+    file_info = youtube_dl.YoutubeDL().extract_info(url, download=False)
     if download_dir is None or len(download_dir)==0:
         download_dir = "downloads"
-    title = file_data["title"]
+    title = file_info["title"]
     filename = f"{title}.mp3"
     download_path = get_download_path(download_dir)
     full_download_path = os.path.join(download_path, filename)
